@@ -40,6 +40,7 @@ po.add_argument("--knn", '-k', default=0, type=int, help="specifiy number of nei
 po.add_argument("--inlier-threshold", default=0, type=float, help="specify inlier threshold in mr (set to <= 0 to use feature resolution)")
 
 po.add_argument("--output-dir", default="output", type=str, help="specify output directory (leave empty for no outputs)")
+po.add_argument('--resume', action='store_true', help="set to true to avoid overwriting output files")
 
 args = po.parse_args()
 
@@ -73,9 +74,9 @@ startTime = timeit.default_timer()
 for i in range(len(objects)):
     sys.stdout.write(dataset.objectLabels[i] + ' '),sys.stdout.flush()
     objectSurf.append(filter.preprocess(mesh=objects[i],
-                                       resolution=resolution,
-                                       normalRadius=args.radius_normal * resolution,
-                                       orientNormals=True))
+                                        resolution=resolution,
+                                        normalRadius=args.radius_normal * resolution,
+                                        orientNormals=True))
 
     # Generate feature points
     objectCloud.append(filter.downsample(cloud=objectSurf[i], resolution=fres))
@@ -99,6 +100,14 @@ for i in range(args.scene_offset, dataset.size, args.scene_nth):
     scene = dataset.at(i)
     sceneMesh = scene.scene
 
+
+    outputFile = args.output_dir + '/' + args.feature + '{}'.format(args.radius_feature) + '---' + scene.label + '---' + dataset.objectLabels[0] + '.txt'
+    print outputFile
+    print os.path.isfile(outputFile)
+    if args.resume and os.path.isfile(outputFile):
+        print('Scene {} already processed - skipping...'.format(scene.label))
+        
+        
     print('Processing scene {}/{} ({})...'.format(i+1, dataset.size, scene.label))
     if scene.empty:
         print('\tScene empty - skipping...')
@@ -143,7 +152,7 @@ for i in range(args.scene_offset, dataset.size, args.scene_nth):
     idxVisible = 0
     for j in range(len(objectCloud)):
         if objectMask[j]:
-            tmp = core.transform(objectCloud[j], scene.poses[idxVisible])
+            tmp = core.transform(objectCloud[j], scene.poses[idxVisible].array())
             idxVisible += 1
         else:
             tmp = core.PointCloud(size=objectCloud[j].size)
@@ -166,6 +175,7 @@ for i in range(args.scene_offset, dataset.size, args.scene_nth):
     inlierThreshold = resolution * (args.resolution_feature if args.inlier_threshold <= 0 else args.inlier_threshold)
 
     # Compute visibility
+    print('\tComputing surface correspondences...')
     corrTotal = core.computeAllCorrespondences(query.shape[1], target.shape[1], distance=-1)
     corrTotalDist = alignments(corrTotal, queryCloud.array(), targetCloud.array())
     positives = list(itertools.compress(corrTotal, corrTotalDist <= inlierThreshold))
