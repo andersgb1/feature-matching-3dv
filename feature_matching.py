@@ -98,7 +98,6 @@ totalRetrieved = 0
 totalInliers = 0
 for i in range(args.scene_offset, dataset.size, args.scene_nth):
     scene = dataset.at(i)
-    sceneMesh = scene.scene
         
     print('Processing scene {}/{} ({})...'.format(i+1, dataset.size, scene.label))
     if scene.empty:
@@ -111,6 +110,7 @@ for i in range(args.scene_offset, dataset.size, args.scene_nth):
         continue;
 
     print('Preprocessing scene...')
+    sceneMesh = scene.scene
     sceneSurf = filter.preprocess(mesh=sceneMesh,
                                   resolution=resolution,
                                   normalRadius=args.radius_normal * resolution)
