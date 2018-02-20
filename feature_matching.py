@@ -100,10 +100,7 @@ for i in range(args.scene_offset, dataset.size, args.scene_nth):
     scene = dataset.at(i)
     sceneMesh = scene.scene
 
-
     outputFile = args.output_dir + '/' + args.feature + '{}'.format(args.radius_feature) + '---' + scene.label + '---' + dataset.objectLabels[0] + '.txt'
-    print outputFile
-    print os.path.isfile(outputFile)
     if args.resume and os.path.isfile(outputFile):
         print('Scene {} already processed - skipping...'.format(scene.label))
         
