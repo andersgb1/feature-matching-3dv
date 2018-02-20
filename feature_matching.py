@@ -99,16 +99,16 @@ totalInliers = 0
 for i in range(args.scene_offset, dataset.size, args.scene_nth):
     scene = dataset.at(i)
     sceneMesh = scene.scene
-
-    outputFile = args.output_dir + '/' + args.feature + '{}'.format(args.radius_feature) + '---' + scene.label + '---' + dataset.objectLabels[0] + '.txt'
-    if args.resume and os.path.isfile(outputFile):
-        print('Scene {} already processed - skipping...'.format(scene.label))
-        
         
     print('Processing scene {}/{} ({})...'.format(i+1, dataset.size, scene.label))
     if scene.empty:
         print('\tScene empty - skipping...')
         continue
+
+    outputFile = args.output_dir + '/' + args.feature + '{}'.format(args.radius_feature) + '---' + scene.label + '---' + dataset.objectLabels[0] + '.txt'
+    if args.resume and os.path.isfile(outputFile):
+        print('\tScene {} already processed - skipping...'.format(scene.label))
+        continue;
 
     print('Preprocessing scene...')
     sceneSurf = filter.preprocess(mesh=sceneMesh,
