@@ -97,13 +97,13 @@ totalPositives = 0
 totalRetrieved = 0
 totalInliers = 0
 for i in range(args.scene_offset, dataset.size, args.scene_nth):
-    scene = dataset.at(i)
-        
     print('Processing scene {}/{} ({})...'.format(i+1, dataset.size, scene.label))
-    if scene.empty:
+    if dataset.empty(i):
         print('\tScene empty - skipping...')
         continue
 
+    scene = dataset.at(i)
+    
     outputFile = args.output_dir + '/' + args.feature + '{}'.format(args.radius_feature) + '---' + scene.label + '---' + dataset.objectLabels[0] + '.txt'
     if args.resume and os.path.isfile(outputFile):
         print('\tScene {} already processed - skipping...'.format(scene.label))
