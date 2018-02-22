@@ -232,13 +232,19 @@ for i in range(args.scene_offset, dataset.size, args.scene_nth):
         print('\t{} feature matches retrieved (searching for {}-NNs)'.format(len(featureCorr), args.knn))
         print('\t{} positive {}-NN matches'.format(numPositives, args.knn))
     print('\t{} inliers'.format(numInliers))
-    print('\tRecall for scene:    {}/{} ({:.2f} %)'.format(numInliers, numPositives, 100 * numInliers / float(numPositives)))
-    print('\tPrecision for scene: {}/{} ({:.2f} %)'.format(numInliers, numRetrieved, 100 * numInliers / float(numRetrieved)))
+    
+    if numPositives > 0:
+        print('\tRecall for scene:    {}/{} ({:.2f} %)'.format(numInliers, numPositives, 100 * numInliers / float(numPositives)))
+    if numRetrieved > 0:
+        print('\tPrecision for scene: {}/{} ({:.2f} %)'.format(numInliers, numRetrieved, 100 * numInliers / float(numRetrieved)))
 
     print('Overall stats')
-    print('\tRecall:      {}/{} ({:.2f} %)'.format(totalInliers, totalPositives, 100 * totalInliers / float(totalPositives)))
-    print('\tPrecision:   {}/{} ({:.2f} %)'.format(totalInliers, totalRetrieved, 100 * totalInliers / float(totalRetrieved)))
+    if totalPositives > 0:
+        print('\tRecall:      {}/{} ({:.2f} %)'.format(totalInliers, totalPositives, 100 * totalInliers / float(totalPositives)))
+    if totalRetrieved > 0:
+        print('\tPrecision:   {}/{} ({:.2f} %)'.format(totalInliers, totalRetrieved, 100 * totalInliers / float(totalRetrieved)))
 
+if totalPositives > 0 and totalRetrieved > 0:
 print('Overall stats')
 print('\tRecall:      {}/{} ({:.2f} %)'.format(totalInliers, totalPositives, 100 * totalInliers / float(totalPositives)))
 print('\tPrecision:   {}/{} ({:.2f} %)'.format(totalInliers, totalRetrieved, 100 * totalInliers / float(totalRetrieved)))
