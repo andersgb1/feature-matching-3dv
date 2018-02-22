@@ -245,6 +245,6 @@ for i in range(args.scene_offset, dataset.size, args.scene_nth):
         print('\tPrecision:   {}/{} ({:.2f} %)'.format(totalInliers, totalRetrieved, 100 * totalInliers / float(totalRetrieved)))
 
 if totalPositives > 0 and totalRetrieved > 0:
-print('Overall stats')
-print('\tRecall:      {}/{} ({:.2f} %)'.format(totalInliers, totalPositives, 100 * totalInliers / float(totalPositives)))
-print('\tPrecision:   {}/{} ({:.2f} %)'.format(totalInliers, totalRetrieved, 100 * totalInliers / float(totalRetrieved)))
+    print('Overall stats')
+    print('\tRecall:      {}/{} ({:.2f} %)'.format(totalInliers, totalPositives, 100 * totalInliers / float(totalPositives)))
+    print('\tPrecision:   {}/{} ({:.2f} %)'.format(totalInliers, totalRetrieved, 100 * totalInliers / float(totalRetrieved)))
