@@ -97,7 +97,7 @@ totalPositives = 0
 totalRetrieved = 0
 totalInliers = 0
 for i in range(args.scene_offset, dataset.size, args.scene_nth):
-    print('Processing scene {}/{} ({})...'.format(i+1, dataset.size, scene.label))
+    print('Processing scene {}/{}...'.format(i+1, dataset.size))
     if dataset.empty(i):
         print('\tScene empty - skipping...')
         continue
