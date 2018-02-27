@@ -65,32 +65,37 @@ diag /= len(objects)
 frad = args.radius_feature * resolution if args.radius_feature > 1 else args.radius_feature * diag
 fres = args.resolution_feature * resolution
 
-objectSurf = []
-objectCloud = []
-sys.stdout.write('Preprocessing '),sys.stdout.flush()
+def preprocess(dataset, objects, resolution, args, fres, frad):
+    objectSurf = []
+    objectCloud = []
+    
+    sys.stdout.write('Preprocessing '),sys.stdout.flush()
 
-startTime = timeit.default_timer()
+    startTime = timeit.default_timer()
 
-for i in range(len(objects)):
-    sys.stdout.write(dataset.objectLabels[i] + ' '),sys.stdout.flush()
-    objectSurf.append(filter.preprocess(mesh=objects[i],
-                                        resolution=resolution,
-                                        normalRadius=args.radius_normal * resolution,
-                                        orientNormals=True))
+    for i in range(len(objects)):
+        sys.stdout.write(dataset.objectLabels[i] + ' '),sys.stdout.flush()
+        objectSurf.append(filter.preprocess(mesh=objects[i],
+                                            resolution=resolution,
+                                            normalRadius=args.radius_normal * resolution,
+                                            orientNormals=True))
 
-    # Generate feature points
-    objectCloud.append(filter.downsample(cloud=objectSurf[i], resolution=fres))
-sys.stdout.write('\n'),sys.stdout.flush()
+        # Generate feature points
+        objectCloud.append(filter.downsample(cloud=objectSurf[i], resolution=fres))
+    sys.stdout.write('\n'),sys.stdout.flush()
 
-print('\tPreprocessing time: {:.3f} seconds'.format(timeit.default_timer() - startTime))
+    print('\tPreprocessing time: {:.3f} seconds'.format(timeit.default_timer() - startTime))
 
+    # Compute features
+    print('Computing {} object features with a radius of {:.3f}...'.format(sum([c.width * c.height for c in objectCloud]), frad))
+    objectFeat = feature.computeFeature(name=args.feature,
+                                        clouds=objectCloud,
+                                        surfaces=objectSurf,
+                                        radius=frad)
+                                        
+    return objectCloud, objectFeat
 
-# Compute features
-print('Computing {} object features with a radius of {:.3f}...'.format(sum([c.width * c.height for c in objectCloud]), frad))
-objectFeat = feature.computeFeature(name=args.feature,
-                                    clouds=objectCloud,
-                                    surfaces=objectSurf,
-                                    radius=frad)
+objectCloud, objectFeat = None, None
 
 # Loop over scenes
 totalPositives = 0
@@ -108,6 +113,9 @@ for i in range(args.scene_offset, dataset.size, args.scene_nth):
     if args.resume and os.path.isfile(outputFile):
         print('\tScene {} already processed - skipping...'.format(scene.label))
         continue;
+        
+    if objectCloud is None:
+        objectCloud, objectFeat = preprocess(dataset, objects, resolution, args, fres, frad)
 
     print('Preprocessing scene...')
     sceneMesh = scene.scene
